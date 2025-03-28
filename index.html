@@ -267,8 +267,43 @@
             background-color: #4CAF50;
         }
         
-        input:checked + .slider:before {
-            transform: translateX(26px);
+        /* Keyboard shortcuts section */
+        .keyboard-shortcuts {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 15px 20px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .keyboard-shortcuts h3 {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+        }
+        
+        .keyboard-shortcuts ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        kbd {
+            display: inline-block;
+            padding: 3px 5px;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1;
+            color: #444;
+            background-color: #eee;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.2);
+            margin-right: 5px;
         }
     </style>
 </head>
@@ -387,6 +422,18 @@
             <button id="playPause" class="button">Pause</button>
             <button id="fullscreenBtn" class="button fullscreen">Full Screen</button>
         </div>
+    </div>
+    
+    <!-- Keyboard shortcuts hint -->
+    <div class="keyboard-shortcuts">
+        <h3>Keyboard Shortcuts</h3>
+        <ul>
+            <li><kbd>Space</kbd> - Play/Pause</li>
+            <li><kbd>H</kbd> - Horizontal direction</li>
+            <li><kbd>D</kbd> - Diagonal 1 direction</li>
+            <li><kbd>F</kbd> - Diagonal 2 direction</li>
+            <li><kbd>C</kbd> - Cycle through colors</li>
+        </ul>
     </div>
 
     <script>
@@ -806,11 +853,51 @@
             }
         }
         
-        // Spacebar control
+        // Keyboard shortcuts - set up color cycling
+        let colorIndex = 0;
+        const colorValues = ["red", "blue", "green", "yellow", "orange"];
+        
+        function cycleColors() {
+            colorIndex = (colorIndex + 1) % colorValues.length;
+            dotColor = colorValues[colorIndex];
+            
+            // Update the radio button
+            const colorRadio = document.querySelector(`input[name="dotColor"][value="${dotColor}"]`);
+            if (colorRadio) {
+                colorRadio.checked = true;
+            }
+            
+            // Update the dot color
+            updateDotColor();
+            saveSettings();
+        }
+        
+        // Expanded keyboard controls
         document.addEventListener('keydown', function(event) {
-            if (event.key === ' ' || event.code === 'Space') {
+            // Case insensitive key handling
+            const key = event.key.toLowerCase();
+            
+            if (key === ' ' || event.code.toLowerCase() === 'space') {
                 event.preventDefault(); // Prevent page scroll
                 togglePlayPause();
+            } else if (key === 'h') {
+                // Set horizontal direction
+                direction = "horizontal";
+                document.querySelector('input[name="direction"][value="horizontal"]').checked = true;
+                saveSettings();
+            } else if (key === 'd') {
+                // Set diagonal 1 direction
+                direction = "diagonal1";
+                document.querySelector('input[name="direction"][value="diagonal1"]').checked = true;
+                saveSettings();
+            } else if (key === 'f') {
+                // Set diagonal 2 direction
+                direction = "diagonal2";
+                document.querySelector('input[name="direction"][value="diagonal2"]').checked = true;
+                saveSettings();
+            } else if (key === 'c') {
+                // Cycle through colors
+                cycleColors();
             }
         });
         
