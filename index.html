@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMDR Red Dot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 43.75%; /* 7/16 = 0.4375 or 43.75% for 16:7 aspect ratio */
+            background-color: #e0e0e0;
+            margin: 30px 0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .dot-area {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .dot {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background-color: red;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .controls {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        label {
+            display: inline-block;
+            width: 100px;
+            font-weight: bold;
+        }
+        
+        input[type="range"] {
+            width: 60%;
+            max-width: 500px;
+            vertical-align: middle;
+        }
+        
+        .value-display {
+            display: inline-block;
+            width: 50px;
+            text-align: center;
+            margin-left: 10px;
+        }
+        
+        .button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .button:hover {
+            background-color: #45a049;
+        }
+        
+        .button.play {
+            background-color: #2196F3;
+        }
+        
+        .button.play:hover {
+            background-color: #0b7dda;
+        }
+        
+        .color-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 5px;
+            justify-content: center;
+        }
+        
+        .color-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .color-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .color-swatch {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 5px;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+        
+        .color-option input[type="radio"]:checked + .color-swatch {
+            border-color: #333;
+        }
+        
+        .color-swatch.red { background-color: red; }
+        .color-swatch.blue { background-color: blue; }
+        .color-swatch.green { background-color: green; }
+        .color-swatch.yellow { background-color: yellow; }
+        .color-swatch.orange { background-color: orange; }
+        
+        .color-label {
+            font-size: 14px;
+        }
+        
+        .direction-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 5px;
+            justify-content: center;
+        }
+        
+        .direction-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            margin-right: 10px;
+            min-width: 120px;
+        }
+        
+        .direction-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .direction-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 30px;
+            border-radius: 4px;
+            margin-right: 5px;
+            background-color: #f0f0f0;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+            font-size: 18px;
+        }
+        
+        .direction-option input[type="radio"]:checked + .direction-icon {
+            border-color: #333;
+            background-color: #e0e0e0;
+        }
+        
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            margin: 0 auto;
+            width: auto;
+            justify-content: center;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+            background-color: #ccc;
+            border-radius: 12px;
+            margin-right: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .toggle-switch:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        
+        input[type="checkbox"] {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        input[type="checkbox"]:checked + .toggle-switch {
+            background-color: #4CAF50;
+        }
+        
+        input[type="checkbox"]:checked + .toggle-switch:before {
+            transform: translateX(24px);
+        }
+        
+        .toggle-label {
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>EMDR Red Dot</h1>
+    
+    <div class="container">
+        <div class="dot-area">
+            <div class="dot" id="dot"></div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <div class="control-group">
+            <label for="frequency">Frequency:</label>
+            <input type="range" id="frequency" min="0.1" max="5" step="0.1" value="1">
+            <span class="value-display" id="frequency-value">1.0 Hz</span>
+        </div>
+        
+        <div class="control-group">
+            <label for="distance">Distance:</label>
+            <input type="range" id="distance" min="5" max="45" step="1" value="20">
+            <span class="value-display" id="distance-value">20%</span>
+        </div>
+        
+        <div class="control-group">
+            <label for="dotSize">Dot Size:</label>
+            <input type="range" id="dotSize" min="23" max="200" step="1" value="100">
+            <span class="value-display" id="dotSize-value">100%</span>
+        </div>
+        
+        <div class="control-group">
+            <label>Dot Color:</label>
+            <div class="color-options">
+                <label class="color-option">
+                    <input type="radio" name="dotColor" value="red" checked>
+                    <span class="color-swatch red"></span>
+                    <span class="color-label">Red</span>
+                </label>
+                <label class="color-option">
+                    <input type="radio" name="dotColor" value="blue">
+                    <span class="color-swatch blue"></span>
+                    <span class="color-label">Blue</span>
+                </label>
+                <label class="color-option">
+                    <input type="radio" name="dotColor" value="green">
+                    <span class="color-swatch green"></span>
+                    <span class="color-label">Green</span>
+                </label>
+                <label class="color-option">
+                    <input type="radio" name="dotColor" value="yellow">
+                    <span class="color-swatch yellow"></span>
+                    <span class="color-label">Yellow</span>
+                </label>
+                <label class="color-option">
+                    <input type="radio" name="dotColor" value="orange">
+                    <span class="color-swatch orange"></span>
+                    <span class="color-label">Orange</span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label>Direction:</label>
+            <div class="direction-options">
+                <label class="direction-option">
+                    <input type="radio" name="oscillationDirection" value="horizontal" checked>
+                    <span class="direction-icon horizontal">↔️</span>
+                    <span class="direction-label">Horizontal</span>
+                </label>
+                <label class="direction-option">
+                    <input type="radio" name="oscillationDirection" value="diagonal1">
+                    <span class="direction-icon diagonal1">↗️↙️</span>
+                    <span class="direction-label">Diagonal&nbsp;1</span>
+                </label>
+                <label class="direction-option">
+                    <input type="radio" name="oscillationDirection" value="diagonal2">
+                    <span class="direction-icon diagonal2">↖️↘️</span>
+                    <span class="direction-label">Diagonal&nbsp;2</span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <button id="playPauseButton" class="button">Pause</button>
+        </div>
+        
+        <div class="control-group">
+            <label class="toggle-container">
+                <input type="checkbox" id="colorblindToggle">
+                <span class="toggle-switch"></span>
+                <span class="toggle-label">Colorblind Mode</span>
+            </label>
+        </div>
+    </div>
+    
+    <script>
+        // Cookie functions
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + d.toUTCString();
+            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+        }
+        
+        function getCookie(name) {
+            const cname = name + "=";
+            const cookies = document.cookie.split(';');
+            for(let i = 0; i < cookies.length; i++) {
+                let c = cookies[i].trim();
+                if (c.indexOf(cname) === 0) {
+                    return c.substring(cname.length, c.length);
+                }
+            }
+            return "";
+        }
+        
+        // Get DOM elements
+        const dot = document.getElementById('dot');
+        const frequencySlider = document.getElementById('frequency');
+        const distanceSlider = document.getElementById('distance');
+        const dotSizeSlider = document.getElementById('dotSize');
+        const frequencyValue = document.getElementById('frequency-value');
+        const distanceValue = document.getElementById('distance-value');
+        const dotSizeValue = document.getElementById('dotSize-value');
+        const playPauseButton = document.getElementById('playPauseButton');
+        const colorRadios = document.querySelectorAll('input[name="dotColor"]');
+        const directionRadios = document.querySelectorAll('input[name="oscillationDirection"]');
+        const colorblindToggle = document.getElementById('colorblindToggle');
+        
+        // Animation variables
+        let frequency = parseFloat(frequencySlider.value);
+        let distance = parseInt(distanceSlider.value);
+        let dotSize = parseInt(dotSizeSlider.value);
+        let dotColor = "red";
+        let oscillationDirection = "horizontal";
+        let isPlaying = true;
+        let isPaused = false;
+        let colorblindMode = false;
+        
+        // Color mappings for regular and colorblind modes
+        const colorMappings = {
+            regular: {
+                red: "red",
+                blue: "blue",
+                green: "green",
+                yellow: "yellow",
+                orange: "orange"
+            },
+            colorblind: {
+                red: "#E6194B",     // Bright red
+                blue: "#4363D8",    // Blue
+                green: "#3CB44B",   // Green
+                yellow: "#FFE119",  // Yellow
+                orange: "#F58231"   // Orange
+            }
+        };
+        
+        // Animation timing
+        let startTime = null;
+        let pauseStartTime = null;
+        let totalPausedTime = 0;
+        let requestId = null;
+        
+        // Deceleration
+        let isDecelerating = false;
+        let decelerationStartTime = null;
+        const DECELERATION_DURATION = 3000;
+        
+        // Base dot size
+        const BASE_DOT_SIZE = 80;
+        
+        // Initialize display values
+        frequencyValue.textContent = frequency.toFixed(1) + ' Hz';
+        distanceValue.textContent = distance + '%';
+        dotSizeValue.textContent = dotSize + '%';
+        
+        // Save all settings to cookies
+        function saveSettings() {
+            setCookie("emdr_frequency", frequency, 365);
+            setCookie("emdr_distance", distance, 365);
+            setCookie("emdr_dotSize", dotSize, 365);
+            setCookie("emdr_dotColor", dotColor, 365);
+            setCookie("emdr_direction", oscillationDirection, 365);
+        }
+        
+        // Load settings from cookies
+        function loadSettings() {
+            const savedFrequency = getCookie("emdr_frequency");
+            if (savedFrequency) {
+                frequency = parseFloat(savedFrequency);
+                frequencySlider.value = frequency;
+                frequencyValue.textContent = frequency.toFixed(1) + ' Hz';
+            }
+            
+            const savedDistance = getCookie("emdr_distance");
+            if (savedDistance) {
+                distance = parseInt(savedDistance);
+                distanceSlider.value = distance;
+                distanceValue.textContent = distance + '%';
+            }
+            
+            const savedDotSize = getCookie("emdr_dotSize");
+            if (savedDotSize) {
+                dotSize = parseInt(savedDotSize);
+                dotSizeSlider.value = dotSize;
+                dotSizeValue.textContent = dotSize + '%';
+                updateDotSize();
+            }
+            
+            const savedDotColor = getCookie("emdr_dotColor");
+            if (savedDotColor) {
+                dotColor = savedDotColor;
+                const colorRadio = document.querySelector(`input[name="dotColor"][value="${dotColor}"]`);
+                if (colorRadio) colorRadio.checked = true;
+                dot.style.backgroundColor = dotColor;
+            }
+            
+            const savedDirection = getCookie("emdr_direction");
+            if (savedDirection) {
+                oscillationDirection = savedDirection;
+                const directionRadio = document.querySelector(`input[name="oscillationDirection"][value="${oscillationDirection}"]`);
+                if (directionRadio) directionRadio.checked = true;
+            }
+        }
+        
+        // Update dot size based on slider value
+        function updateDotSize() {
+            const newSize = (BASE_DOT_SIZE * dotSize / 100);
+            dot.style.width = newSize + 'px';
+            dot.style.height = newSize + 'px';
+        }
+        
+        // Update dot color based on selected color and mode
+        function updateDotColor() {
+            const colorSet = colorblindMode ? colorMappings.colorblind : colorMappings.regular;
+            dot.style.backgroundColor = colorSet[dotColor];
+        }
+        
+        // Play/Pause functionality
+        function togglePlayPause() {
+            if (isPlaying) {
+                // Start deceleration to pause
+                isPlaying = false;
+                isDecelerating = true;
+                decelerationStartTime = performance.now();
+                playPauseButton.textContent = 'Play';
+                playPauseButton.classList.add('play');
+            } else {
+                // Resume playing
+                if (isDecelerating) {
+                    isDecelerating = false;
+                }
+                
+                // If completely paused, reset timing
+                if (isPaused) {
+                    isPaused = false;
+                    totalPausedTime += performance.now() - pauseStartTime;
+                }
+                
+                isPlaying = true;
+                playPauseButton.textContent = 'Pause';
+                playPauseButton.classList.remove('play');
+                
+                if (!requestId) {
+                    requestId = requestAnimationFrame(animate);
+                }
+            }
+        }
+        
+        // Animation function
+        function animate(timestamp) {
+            // Initialize startTime on first run
+            if (!startTime) startTime = timestamp;
+            
+            // Calculate elapsed time accounting for pauses
+            const elapsedTime = timestamp - startTime - totalPausedTime;
+            
+            if (isDecelerating) {
+                // Calculate deceleration progress (0 to 1)
+                const decelerationElapsed = timestamp - decelerationStartTime;
+                const progress = Math.min(decelerationElapsed / DECELERATION_DURATION, 1);
+                
+                if (progress >= 1) {
+                    // Fully stopped - center the dot
+                    dot.style.left = '50%';
+                    dot.style.top = '50%';
+                    
+                    // Set paused state
+                    isDecelerating = false;
+                    isPaused = true;
+                    pauseStartTime = performance.now();
+                    requestId = null;
+                    return;
+                }
+                
+                // Calculate position during deceleration
+                const angularFrequency = 2 * Math.PI * frequency / 1000;
+                const sineValue = Math.sin(angularFrequency * elapsedTime);
+                
+                // Reduce amplitude gradually
+                const easingFactor = 1 - Math.pow(progress, 2);
+                const reducedDistance = distance * easingFactor;
+                
+                // Apply position based on direction
+                let xPos = 50;
+                let yPos = 50;
+                
+                if (oscillationDirection === "horizontal") {
+                    xPos = 50 + reducedDistance * sineValue;
+                } else if (oscillationDirection === "diagonal1") {
+                    xPos = 50 + reducedDistance * sineValue;
+                    yPos = 50 - reducedDistance * sineValue;
+                } else if (oscillationDirection === "diagonal2") {
+                    xPos = 50 + reducedDistance * sineValue;
+                    yPos = 50 + reducedDistance * sineValue;
+                }
+                
+                dot.style.left = xPos + '%';
+                dot.style.top = yPos + '%';
+                
+            } else if (isPlaying) {
+                // Regular animation
+                const angularFrequency = 2 * Math.PI * frequency / 1000;
+                const sineValue = Math.sin(angularFrequency * elapsedTime);
+                
+                // Apply position based on direction
+                let xPos = 50;
+                let yPos = 50;
+                
+                if (oscillationDirection === "horizontal") {
+                    xPos = 50 + distance * sineValue;
+                } else if (oscillationDirection === "diagonal1") {
+                    xPos = 50 + distance * sineValue;
+                    yPos = 50 - distance * sineValue;
+                } else if (oscillationDirection === "diagonal2") {
+                    xPos = 50 + distance * sineValue;
+                    yPos = 50 + distance * sineValue;
+                }
+                
+                dot.style.left = xPos + '%';
+                dot.style.top = yPos + '%';
+            }
+            
+            // Continue animation
+            requestId = requestAnimationFrame(animate);
+        }
+        
+        // Event listeners
+        frequencySlider.addEventListener('input', function() {
+            frequency = parseFloat(this.value);
+            frequencyValue.textContent = frequency.toFixed(1) + ' Hz';
+            saveSettings();
+        });
+        
+        distanceSlider.addEventListener('input', function() {
+            distance = parseInt(this.value);
+            distanceValue.textContent = distance + '%';
+            saveSettings();
+        });
+        
+        dotSizeSlider.addEventListener('input', function() {
+            dotSize = parseInt(this.value);
+            dotSizeValue.textContent = dotSize + '%';
+            updateDotSize();
+            saveSettings();
+        });
+        
+        playPauseButton.addEventListener('click', togglePlayPause);
+        
+        // Color selection event listeners
+        colorRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                dotColor = this.value;
+                updateDotColor();
+                saveSettings();
+            });
+        });
+        
+        // Colorblind mode toggle
+        colorblindToggle.addEventListener('change', function() {
+            colorblindMode = this.checked;
+            updateDotColor();
+            
+            // Update color swatches in the UI
+            const colorSet = colorblindMode ? colorMappings.colorblind : colorMappings.regular;
+            document.querySelectorAll('.color-swatch').forEach(swatch => {
+                const colorClass = Array.from(swatch.classList).find(cls => colorMappings.regular.hasOwnProperty(cls));
+                if (colorClass) {
+                    swatch.style.backgroundColor = colorSet[colorClass];
+                }
+            });
+            
+            console.log("Saving colorblind mode:", colorblindMode);
+            saveSettings();
+        });
+        
+        // Direction selection event listeners
+        directionRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                oscillationDirection = this.value;
+                saveSettings();
+            });
+        });
+        
+        // Initialize color swatches
+        function initializeColorSwatches() {
+            const colorSet = colorblindMode ? colorMappings.colorblind : colorMappings.regular;
+            document.querySelectorAll('.color-swatch').forEach(swatch => {
+                const colorClass = Array.from(swatch.classList).find(cls => colorMappings.regular.hasOwnProperty(cls));
+                if (colorClass) {
+                    swatch.style.backgroundColor = colorSet[colorClass];
+                }
+            });
+        }
+        
+        // Load settings and start animation
+        loadSettings();
+        updateDotSize();
+        initializeColorSwatches();
+        requestId = requestAnimationFrame(animate);
+    </script>
+</body>
+</html>
