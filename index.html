@@ -5,38 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EMDR Red Dot</title>
     <style>
+        /* Basic styles */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
             background-color: #f5f5f5;
-            width: 100%;
-            box-sizing: border-box;
         }
         
         h1 {
             text-align: center;
             color: #333;
+            margin-bottom: 20px;
         }
         
+        /* Movement area */
         .container {
             position: relative;
             width: 100%;
-            padding-bottom: 43.75%; /* 7/16 = 0.4375 or 43.75% for 16:7 aspect ratio */
+            padding-bottom: 43.75%; /* 7/16 ratio (16:7) */
             background-color: #e0e0e0;
-            margin: 30px 0;
-            border-radius: 5px;
+            margin: 20px 0;
+            border-radius: 8px;
             overflow: hidden;
         }
         
-        .dot-area {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-        
+        /* Dot/object that moves */
         .dot {
             position: absolute;
             width: 80px;
@@ -46,57 +40,58 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            transition: background-color 0.3s;
         }
         
+        /* Controls container */
         .controls {
-            background-color: #fff;
+            background-color: white;
+            border-radius: 8px;
             padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             max-width: 800px;
             margin: 0 auto;
         }
         
+        /* Single control group */
         .control-group {
             margin-bottom: 15px;
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
         }
         
-        label {
-            display: inline-block;
-            width: 100px;
+        /* Control labels */
+        .control-label {
             font-weight: bold;
+            width: 100px;
+            text-align: right;
+            margin-right: 15px;
         }
         
+        /* Sliders */
         input[type="range"] {
-            width: 60%;
+            flex: 1;
             max-width: 500px;
-            vertical-align: middle;
         }
         
+        /* Value displays */
         .value-display {
-            display: inline-block;
-            width: 50px;
-            text-align: center;
+            width: 60px;
+            text-align: left;
             margin-left: 10px;
         }
         
+        /* Play/Pause button */
         .button {
             background-color: #4CAF50;
-            border: none;
             color: white;
+            border: none;
             padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
             border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
             transition: background-color 0.3s;
         }
         
@@ -112,144 +107,148 @@
             background-color: #0b7dda;
         }
         
-        .color-options {
+        /* Color options */
+        .option-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 5px;
             justify-content: center;
+            gap: 10px;
+            margin-top: 5px;
         }
         
-        .color-option {
+        /* Radio buttons styling */
+        .radio-option {
             display: flex;
             align-items: center;
+            margin: 0 5px;
             cursor: pointer;
-            margin-right: 10px;
         }
         
-        .color-option input[type="radio"] {
+        .radio-option input[type="radio"] {
             position: absolute;
             opacity: 0;
-            width: 0;
-            height: 0;
         }
         
+        /* Color swatches */
         .color-swatch {
-            display: inline-block;
             width: 24px;
             height: 24px;
             border-radius: 50%;
+            display: inline-block;
             margin-right: 5px;
             border: 2px solid transparent;
             transition: border-color 0.2s;
         }
         
-        .color-option input[type="radio"]:checked + .color-swatch {
+        .radio-option input[type="radio"]:checked + .color-swatch {
             border-color: #333;
         }
         
-        .color-swatch.red { background-color: red; }
-        .color-swatch.blue { background-color: blue; }
-        .color-swatch.green { background-color: green; }
-        .color-swatch.yellow { background-color: yellow; }
-        .color-swatch.orange { background-color: orange; }
+        .color-red { background-color: red; }
+        .color-blue { background-color: blue; }
+        .color-green { background-color: green; }
+        .color-yellow { background-color: yellow; }
+        .color-orange { background-color: orange; }
         
-        .color-label {
-            font-size: 14px;
-        }
-        
-        .direction-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 5px;
-            justify-content: center;
-        }
-        
-        .direction-option {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            margin-right: 10px;
-            min-width: 120px;
-        }
-        
-        .direction-option input[type="radio"] {
-            position: absolute;
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
+        /* Direction options */
         .direction-icon {
-            display: inline-flex;
+            width: 40px;
+            height: 24px;
+            border-radius: 4px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 30px;
-            border-radius: 4px;
             margin-right: 5px;
             background-color: #f0f0f0;
             border: 2px solid transparent;
-            transition: border-color 0.2s;
-            font-size: 18px;
+            font-size: 16px;
         }
         
-        .direction-option input[type="radio"]:checked + .direction-icon {
+        .radio-option input[type="radio"]:checked + .direction-icon {
             border-color: #333;
             background-color: #e0e0e0;
         }
         
-        .toggle-container {
+        /* Shape options */
+        .shape-preview {
+            width: 40px;
+            height: 24px;
+            border-radius: 4px;
             display: flex;
             align-items: center;
-            cursor: pointer;
-            margin: 0 auto;
-            width: auto;
             justify-content: center;
+            margin-right: 5px;
+            background-color: #f0f0f0;
+            border: 2px solid transparent;
+            position: relative;
         }
         
+        .shape-preview.circle::after {
+            content: "";
+            width: 16px;
+            height: 16px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+        }
+        
+        .shape-preview.teddy {
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiPjxwYXRoIGZpbGw9IiM4MTVhNGUiIGQ9Ik01MTIgOTZjMjI5LjggMCA0MTYgMTg2LjIgNDE2IDQxNnMtMTg2LjIgNDE2LTQxNiA0MTZTOTYgNzQxLjggOTYgNTEyIDE4Ni4yIDk2IDUxMiA5NnoiLz48cGF0aCBmaWxsPSIjYmE5NzgwIiBkPSJNMjM3IDE4NmM1MC44IDAgOTIgNDEuMiA5MiA5MnMtNDEuMiA5Mi05MiA5MnMtOTItNDEuMi05Mi05MiA0MS4yLTkyIDkyLTkyem01NDMgMGM1MC44IDAgOTIgNDEuMiA5MiA5MnMtNDEuMiA5Mi05MiA5MnMtOTItNDEuMi05Mi05MiA0MS4yLTkyIDkyLTkyeiIvPjxwYXRoIGZpbGw9IiMxODE4MTgiIGQ9Ik0zNDMgNDg1YzM1LjMgMCA2NCAyOC43IDY0IDY0cy0yOC43IDY0LTY0IDY0LTY0LTI4LjctNjQtNjQgMjguNy02NCA2NC02NHptMzMwIDBjMzUuMyAwIDY0IDI4LjcgNjQgNjRzLTI4LjcgNjQtNjQgNjQtNjQtMjguNy02NC02NCAyOC43LTY0IDY0LTY0eiIvPjxwYXRoIGZpbGw9IiNmOGJhNTciIGQ9Ik01MDggNjE0Yzk3IDAgMTc2IDc5IDE3NiAxNzZoLTM1MmM0LTk3IDgwLTE3NiAxNzYtMTc2eiIvPjxwYXRoIGZpbGw9IiMxODE4MTgiIGQ9Ik01MTAgNjcwYzM1LjMgMCA2NCAyOC43IDY0IDY0cy0yOC43IDY0LTY0IDY0LTY0LTI4LjctNjQtNjQgMjguNy02NCA2NC02NHptMCAxMDBjNTAgMCA5MCA0MCA5MCA4MGgtMTgwYzAtNDAgNDAtODAgOTAtODB6Ii8+PC9zdmc+');
+            background-size: 20px 20px;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .radio-option input[type="radio"]:checked + .shape-preview {
+            border-color: #333;
+            background-color: #e0e0e0;
+        }
+        
+        /* Toggle switch */
         .toggle-switch {
             position: relative;
             display: inline-block;
-            width: 48px;
+            width: 50px;
             height: 24px;
-            background-color: #ccc;
-            border-radius: 12px;
             margin-right: 10px;
-            transition: background-color 0.3s;
         }
         
-        .toggle-switch:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 2px;
-            bottom: 2px;
-            background-color: white;
-            border-radius: 50%;
-            transition: transform 0.3s;
-        }
-        
-        input[type="checkbox"] {
+        .toggle-switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
         
-        input[type="checkbox"]:checked + .toggle-switch {
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
             background-color: #4CAF50;
         }
         
-        input[type="checkbox"]:checked + .toggle-switch:before {
-            transform: translateX(24px);
-        }
-        
-        .toggle-label {
-            font-size: 14px;
-            font-weight: bold;
-            white-space: nowrap;
+        input:checked + .slider:before {
+            transform: translateX(26px);
         }
     </style>
 </head>
@@ -257,96 +256,169 @@
     <h1>EMDR Red Dot</h1>
     
     <div class="container">
-        <div class="dot-area">
-            <div class="dot" id="dot"></div>
-        </div>
+        <div id="dot" class="dot"></div>
     </div>
     
     <div class="controls">
+        <!-- Frequency slider -->
         <div class="control-group">
-            <label for="frequency">Frequency:</label>
+            <div class="control-label">Frequency:</div>
             <input type="range" id="frequency" min="0.1" max="5" step="0.1" value="1">
-            <span class="value-display" id="frequency-value">1.0 Hz</span>
+            <div class="value-display" id="frequency-value">1.0 Hz</div>
         </div>
         
+        <!-- Distance slider -->
         <div class="control-group">
-            <label for="distance">Distance:</label>
+            <div class="control-label">Distance:</div>
             <input type="range" id="distance" min="5" max="45" step="1" value="20">
-            <span class="value-display" id="distance-value">20%</span>
+            <div class="value-display" id="distance-value">20%</div>
         </div>
         
+        <!-- Size slider -->
         <div class="control-group">
-            <label for="dotSize">Dot Size:</label>
+            <div class="control-label">Size:</div>
             <input type="range" id="dotSize" min="23" max="200" step="1" value="100">
-            <span class="value-display" id="dotSize-value">100%</span>
+            <div class="value-display" id="dotSize-value">100%</div>
         </div>
         
+        <!-- Color selection -->
         <div class="control-group">
-            <label>Dot Color:</label>
-            <div class="color-options">
-                <label class="color-option">
+            <div class="control-label">Color:</div>
+            <div class="option-group">
+                <label class="radio-option">
                     <input type="radio" name="dotColor" value="red" checked>
-                    <span class="color-swatch red"></span>
-                    <span class="color-label">Red</span>
+                    <span class="color-swatch color-red"></span>
+                    <span>Red</span>
                 </label>
-                <label class="color-option">
+                <label class="radio-option">
                     <input type="radio" name="dotColor" value="blue">
-                    <span class="color-swatch blue"></span>
-                    <span class="color-label">Blue</span>
+                    <span class="color-swatch color-blue"></span>
+                    <span>Blue</span>
                 </label>
-                <label class="color-option">
+                <label class="radio-option">
                     <input type="radio" name="dotColor" value="green">
-                    <span class="color-swatch green"></span>
-                    <span class="color-label">Green</span>
+                    <span class="color-swatch color-green"></span>
+                    <span>Green</span>
                 </label>
-                <label class="color-option">
+                <label class="radio-option">
                     <input type="radio" name="dotColor" value="yellow">
-                    <span class="color-swatch yellow"></span>
-                    <span class="color-label">Yellow</span>
+                    <span class="color-swatch color-yellow"></span>
+                    <span>Yellow</span>
                 </label>
-                <label class="color-option">
+                <label class="radio-option">
                     <input type="radio" name="dotColor" value="orange">
-                    <span class="color-swatch orange"></span>
-                    <span class="color-label">Orange</span>
+                    <span class="color-swatch color-orange"></span>
+                    <span>Orange</span>
                 </label>
             </div>
         </div>
         
+        <!-- Direction selection -->
         <div class="control-group">
-            <label>Direction:</label>
-            <div class="direction-options">
-                <label class="direction-option">
-                    <input type="radio" name="oscillationDirection" value="horizontal" checked>
-                    <span class="direction-icon horizontal">↔️</span>
-                    <span class="direction-label">Horizontal</span>
+            <div class="control-label">Direction:</div>
+            <div class="option-group">
+                <label class="radio-option">
+                    <input type="radio" name="direction" value="horizontal" checked>
+                    <span class="direction-icon">↔️</span>
+                    <span>Horizontal</span>
                 </label>
-                <label class="direction-option">
-                    <input type="radio" name="oscillationDirection" value="diagonal1">
-                    <span class="direction-icon diagonal1">↗️↙️</span>
-                    <span class="direction-label">Diagonal&nbsp;1</span>
+                <label class="radio-option">
+                    <input type="radio" name="direction" value="diagonal1">
+                    <span class="direction-icon">↗️↙️</span>
+                    <span>Diagonal&nbsp;1</span>
                 </label>
-                <label class="direction-option">
-                    <input type="radio" name="oscillationDirection" value="diagonal2">
-                    <span class="direction-icon diagonal2">↖️↘️</span>
-                    <span class="direction-label">Diagonal&nbsp;2</span>
+                <label class="radio-option">
+                    <input type="radio" name="direction" value="diagonal2">
+                    <span class="direction-icon">↖️↘️</span>
+                    <span>Diagonal&nbsp;2</span>
                 </label>
             </div>
         </div>
         
+        <!-- Shape selection -->
         <div class="control-group">
-            <button id="playPauseButton" class="button">Pause</button>
+            <div class="control-label">Shape:</div>
+            <div class="option-group">
+                <label class="radio-option">
+                    <input type="radio" name="shape" value="circle" checked>
+                    <span class="shape-preview circle"></span>
+                    <span>Circle</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="shape" value="teddy">
+                    <span class="shape-preview teddy"></span>
+                    <span>Teddy</span>
+                </label>
+            </div>
         </div>
         
+        <!-- Colorblind mode toggle -->
         <div class="control-group">
-            <label class="toggle-container">
-                <input type="checkbox" id="colorblindToggle">
-                <span class="toggle-switch"></span>
-                <span class="toggle-label">Colorblind Mode</span>
+            <div class="control-label">Colorblind:</div>
+            <label class="toggle-switch">
+                <input type="checkbox" id="colorblind">
+                <span class="slider"></span>
             </label>
+            <span>Colorblind Mode</span>
+        </div>
+        
+        <!-- Play/Pause button -->
+        <div class="control-group">
+            <button id="playPause" class="button">Pause</button>
         </div>
     </div>
-    
+
     <script>
+        // DOM Elements
+        const dot = document.getElementById('dot');
+        const frequencySlider = document.getElementById('frequency');
+        const distanceSlider = document.getElementById('distance');
+        const sizeSlider = document.getElementById('dotSize');
+        const frequencyValue = document.getElementById('frequency-value');
+        const distanceValue = document.getElementById('distance-value');
+        const sizeValue = document.getElementById('dotSize-value');
+        const colorblindToggle = document.getElementById('colorblind');
+        const playPauseButton = document.getElementById('playPause');
+        
+        // State variables
+        let frequency = parseFloat(frequencySlider.value);
+        let distance = parseInt(distanceSlider.value);
+        let dotSize = parseInt(sizeSlider.value);
+        let dotColor = "red";
+        let direction = "horizontal";
+        let shape = "circle";
+        let colorblindMode = false;
+        let isPlaying = true;
+        let isPaused = false;
+        let startTime = null;
+        let pauseStartTime = null;
+        let totalPausedTime = 0;
+        let animationID = null;
+        let isDecelerating = false;
+        let decelerationStartTime = null;
+        
+        // Constants
+        const DECELERATION_DURATION = 1045; // 1.045 seconds for deceleration
+        const BASE_DOT_SIZE = 80; // Base dot size in pixels
+        
+        // Color mappings for colorblind mode
+        const colorMappings = {
+            standard: {
+                red: "red",
+                blue: "blue",
+                green: "green",
+                yellow: "yellow",
+                orange: "orange"
+            },
+            colorblind: {
+                red: "#E6194B",     // Bright red
+                blue: "#4363D8",    // Blue
+                green: "#3CB44B",   // Green
+                yellow: "#FFE119",  // Yellow
+                orange: "#F58231"   // Orange
+            }
+        };
+        
         // Cookie functions
         function setCookie(name, value, days) {
             const d = new Date();
@@ -367,165 +439,153 @@
             return "";
         }
         
-        // Get DOM elements
-        const dot = document.getElementById('dot');
-        const frequencySlider = document.getElementById('frequency');
-        const distanceSlider = document.getElementById('distance');
-        const dotSizeSlider = document.getElementById('dotSize');
-        const frequencyValue = document.getElementById('frequency-value');
-        const distanceValue = document.getElementById('distance-value');
-        const dotSizeValue = document.getElementById('dotSize-value');
-        const playPauseButton = document.getElementById('playPauseButton');
-        const colorRadios = document.querySelectorAll('input[name="dotColor"]');
-        const directionRadios = document.querySelectorAll('input[name="oscillationDirection"]');
-        const colorblindToggle = document.getElementById('colorblindToggle');
-        
-        // Animation variables
-        let frequency = parseFloat(frequencySlider.value);
-        let distance = parseInt(distanceSlider.value);
-        let dotSize = parseInt(dotSizeSlider.value);
-        let dotColor = "red";
-        let oscillationDirection = "horizontal";
-        let isPlaying = true;
-        let isPaused = false;
-        let colorblindMode = false;
-        
-        // Color mappings for regular and colorblind modes
-        const colorMappings = {
-            regular: {
-                red: "red",
-                blue: "blue",
-                green: "green",
-                yellow: "yellow",
-                orange: "orange"
-            },
-            colorblind: {
-                red: "#E6194B",     // Bright red
-                blue: "#4363D8",    // Blue
-                green: "#3CB44B",   // Green
-                yellow: "#FFE119",  // Yellow
-                orange: "#F58231"   // Orange
-            }
-        };
-        
-        // Animation timing
-        let startTime = null;
-        let pauseStartTime = null;
-        let totalPausedTime = 0;
-        let requestId = null;
-        
-        // Deceleration
-        let isDecelerating = false;
-        let decelerationStartTime = null;
-        const DECELERATION_DURATION = 3000;
-        
-        // Base dot size
-        const BASE_DOT_SIZE = 80;
-        
-        // Initialize display values
-        frequencyValue.textContent = frequency.toFixed(1) + ' Hz';
-        distanceValue.textContent = distance + '%';
-        dotSizeValue.textContent = dotSize + '%';
-        
         // Save all settings to cookies
         function saveSettings() {
             setCookie("emdr_frequency", frequency, 365);
             setCookie("emdr_distance", distance, 365);
             setCookie("emdr_dotSize", dotSize, 365);
             setCookie("emdr_dotColor", dotColor, 365);
-            setCookie("emdr_direction", oscillationDirection, 365);
+            setCookie("emdr_direction", direction, 365);
+            setCookie("emdr_shape", shape, 365);
+            setCookie("emdr_colorblind", colorblindMode, 365);
         }
         
         // Load settings from cookies
         function loadSettings() {
+            // Load frequency
             const savedFrequency = getCookie("emdr_frequency");
             if (savedFrequency) {
                 frequency = parseFloat(savedFrequency);
                 frequencySlider.value = frequency;
-                frequencyValue.textContent = frequency.toFixed(1) + ' Hz';
+                frequencyValue.textContent = frequency.toFixed(1) + " Hz";
             }
             
+            // Load distance
             const savedDistance = getCookie("emdr_distance");
             if (savedDistance) {
                 distance = parseInt(savedDistance);
                 distanceSlider.value = distance;
-                distanceValue.textContent = distance + '%';
+                distanceValue.textContent = distance + "%";
             }
             
-            const savedDotSize = getCookie("emdr_dotSize");
-            if (savedDotSize) {
-                dotSize = parseInt(savedDotSize);
-                dotSizeSlider.value = dotSize;
-                dotSizeValue.textContent = dotSize + '%';
-                updateDotSize();
+            // Load dot size
+            const savedSize = getCookie("emdr_dotSize");
+            if (savedSize) {
+                dotSize = parseInt(savedSize);
+                sizeSlider.value = dotSize;
+                sizeValue.textContent = dotSize + "%";
             }
             
-            const savedDotColor = getCookie("emdr_dotColor");
-            if (savedDotColor) {
-                dotColor = savedDotColor;
-                const colorRadio = document.querySelector(`input[name="dotColor"][value="${dotColor}"]`);
-                if (colorRadio) colorRadio.checked = true;
-                dot.style.backgroundColor = dotColor;
+            // Load dot color
+            const savedColor = getCookie("emdr_dotColor");
+            if (savedColor) {
+                dotColor = savedColor;
+                document.querySelector(`input[name="dotColor"][value="${dotColor}"]`).checked = true;
             }
             
+            // Load direction
             const savedDirection = getCookie("emdr_direction");
             if (savedDirection) {
-                oscillationDirection = savedDirection;
-                const directionRadio = document.querySelector(`input[name="oscillationDirection"][value="${oscillationDirection}"]`);
-                if (directionRadio) directionRadio.checked = true;
+                direction = savedDirection;
+                document.querySelector(`input[name="direction"][value="${direction}"]`).checked = true;
+            }
+            
+            // Load shape
+            const savedShape = getCookie("emdr_shape");
+            if (savedShape) {
+                shape = savedShape;
+                document.querySelector(`input[name="shape"][value="${shape}"]`).checked = true;
+            }
+            
+            // Load colorblind mode
+            const savedColorblind = getCookie("emdr_colorblind");
+            if (savedColorblind === "true") {
+                colorblindMode = true;
+                colorblindToggle.checked = true;
             }
         }
         
-        // Update dot size based on slider value
-        function updateDotSize() {
-            const newSize = (BASE_DOT_SIZE * dotSize / 100);
-            dot.style.width = newSize + 'px';
-            dot.style.height = newSize + 'px';
-        }
-        
-        // Update dot color based on selected color and mode
+        // Update dot color based on selected color and colorblind mode
         function updateDotColor() {
-            const colorSet = colorblindMode ? colorMappings.colorblind : colorMappings.regular;
-            dot.style.backgroundColor = colorSet[dotColor];
+            if (shape === "circle") { // Only apply color to circle shape
+                const colors = colorblindMode ? colorMappings.colorblind : colorMappings.standard;
+                dot.style.backgroundColor = colors[dotColor];
+            }
         }
         
-        // Play/Pause functionality
+        // Update dot size
+        function updateDotSize() {
+            const newSize = (BASE_DOT_SIZE * dotSize) / 100;
+            dot.style.width = newSize + "px";
+            dot.style.height = newSize + "px";
+        }
+        
+        // Update dot shape
+        function updateDotShape() {
+            if (shape === "circle") {
+                dot.style.backgroundImage = "none";
+                dot.style.borderRadius = "50%";
+                updateDotColor(); // Apply correct color to circle
+            } else if (shape === "teddy") {
+                dot.style.backgroundImage = "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiPjxwYXRoIGZpbGw9IiM4MTVhNGUiIGQ9Ik01MTIgOTZjMjI5LjggMCA0MTYgMTg2LjIgNDE2IDQxNnMtMTg2LjIgNDE2LTQxNiA0MTZTOTYgNzQxLjggOTYgNTEyIDE4Ni4yIDk2IDUxMiA5NnoiLz48cGF0aCBmaWxsPSIjYmE5NzgwIiBkPSJNMjM3IDE4NmM1MC44IDAgOTIgNDEuMiA5MiA5MnMtNDEuMiA5Mi05MiA5MnMtOTItNDEuMi05Mi05MiA0MS4yLTkyIDkyLTkyem01NDMgMGM1MC44IDAgOTIgNDEuMiA5MiA5MnMtNDEuMiA5Mi05MiA5MnMtOTItNDEuMi05Mi05MiA0MS4yLTkyIDkyLTkyeiIvPjxwYXRoIGZpbGw9IiMxODE4MTgiIGQ9Ik0zNDMgNDg1YzM1LjMgMCA2NCAyOC43IDY0IDY0cy0yOC43IDY0LTY0IDY0LTY0LTI4LjctNjQtNjQgMjguNy02NCA2NC02NHptMzMwIDBjMzUuMyAwIDY0IDI4LjcgNjQgNjRzLTI4LjcgNjQtNjQgNjQtNjQtMjguNy02NC02NCAyOC43LTY0IDY0LTY0eiIvPjxwYXRoIGZpbGw9IiNmOGJhNTciIGQ9Ik01MDggNjE0Yzk3IDAgMTc2IDc5IDE3NiAxNzZoLTM1MmM0LTk3IDgwLTE3NiAxNzYtMTc2eiIvPjxwYXRoIGZpbGw9IiMxODE4MTgiIGQ9Ik01MTAgNjcwYzM1LjMgMCA2NCAyOC43IDY0IDY0cy0yOC43IDY0LTY0IDY0LTY0LTI4LjctNjQtNjQgMjguNy02NCA2NC02NHptMCAxMDBjNTAgMCA5MCA0MCA5MCA4MGgtMTgwYzAtNDAgNDAtODAgOTAtODB6Ii8+PC9zdmc+')";
+                dot.style.backgroundSize = "100% 100%";
+                dot.style.backgroundRepeat = "no-repeat";
+                dot.style.backgroundPosition = "center";
+                dot.style.backgroundColor = "transparent";
+                dot.style.borderRadius = "0";
+            }
+        }
+        
+        // Update color swatches for colorblind mode
+        function updateColorSwatches() {
+            const colors = colorblindMode ? colorMappings.colorblind : colorMappings.standard;
+            document.querySelectorAll('.color-swatch').forEach(swatch => {
+                const colorName = Array.from(swatch.classList)
+                    .find(cls => cls.startsWith('color-'))
+                    ?.replace('color-', '');
+                if (colorName && colors[colorName]) {
+                    swatch.style.backgroundColor = colors[colorName];
+                }
+            });
+        }
+        
+        // Play/Pause toggle
         function togglePlayPause() {
             if (isPlaying) {
                 // Start deceleration to pause
                 isPlaying = false;
                 isDecelerating = true;
                 decelerationStartTime = performance.now();
-                playPauseButton.textContent = 'Play';
-                playPauseButton.classList.add('play');
+                playPauseButton.textContent = "Play";
+                playPauseButton.classList.add("play");
             } else {
                 // Resume playing
                 if (isDecelerating) {
                     isDecelerating = false;
                 }
                 
-                // If completely paused, reset timing
+                // If fully paused, reset timing
                 if (isPaused) {
                     isPaused = false;
                     totalPausedTime += performance.now() - pauseStartTime;
                 }
                 
                 isPlaying = true;
-                playPauseButton.textContent = 'Pause';
-                playPauseButton.classList.remove('play');
+                playPauseButton.textContent = "Pause";
+                playPauseButton.classList.remove("play");
                 
-                if (!requestId) {
-                    requestId = requestAnimationFrame(animate);
+                if (!animationID) {
+                    animationID = requestAnimationFrame(animate);
                 }
             }
         }
         
         // Animation function
         function animate(timestamp) {
-            // Initialize startTime on first run
+            // Initialize start time on first frame
             if (!startTime) startTime = timestamp;
             
-            // Calculate elapsed time accounting for pauses
+            // Calculate elapsed time (accounting for pauses)
             const elapsedTime = timestamp - startTime - totalPausedTime;
             
             if (isDecelerating) {
@@ -534,15 +594,15 @@
                 const progress = Math.min(decelerationElapsed / DECELERATION_DURATION, 1);
                 
                 if (progress >= 1) {
-                    // Fully stopped - center the dot
-                    dot.style.left = '50%';
-                    dot.style.top = '50%';
+                    // Completely stopped - center dot
+                    dot.style.left = "50%";
+                    dot.style.top = "50%";
                     
                     // Set paused state
                     isDecelerating = false;
                     isPaused = true;
                     pauseStartTime = performance.now();
-                    requestId = null;
+                    animationID = null;
                     return;
                 }
                 
@@ -550,7 +610,7 @@
                 const angularFrequency = 2 * Math.PI * frequency / 1000;
                 const sineValue = Math.sin(angularFrequency * elapsedTime);
                 
-                // Reduce amplitude gradually
+                // Reduce amplitude gradually using quadratic easing
                 const easingFactor = 1 - Math.pow(progress, 2);
                 const reducedDistance = distance * easingFactor;
                 
@@ -558,20 +618,20 @@
                 let xPos = 50;
                 let yPos = 50;
                 
-                if (oscillationDirection === "horizontal") {
+                if (direction === "horizontal") {
                     xPos = 50 + reducedDistance * sineValue;
-                } else if (oscillationDirection === "diagonal1") {
+                } else if (direction === "diagonal1") {
                     xPos = 50 + reducedDistance * sineValue;
                     yPos = 50 - reducedDistance * sineValue;
-                } else if (oscillationDirection === "diagonal2") {
+                } else if (direction === "diagonal2") {
                     xPos = 50 + reducedDistance * sineValue;
                     yPos = 50 + reducedDistance * sineValue;
                 }
                 
-                dot.style.left = xPos + '%';
-                dot.style.top = yPos + '%';
-                
-            } else if (isPlaying) {
+                dot.style.left = xPos + "%";
+                dot.style.top = yPos + "%";
+            } 
+            else if (isPlaying) {
                 // Regular animation
                 const angularFrequency = 2 * Math.PI * frequency / 1000;
                 const sineValue = Math.sin(angularFrequency * elapsedTime);
@@ -580,48 +640,46 @@
                 let xPos = 50;
                 let yPos = 50;
                 
-                if (oscillationDirection === "horizontal") {
+                if (direction === "horizontal") {
                     xPos = 50 + distance * sineValue;
-                } else if (oscillationDirection === "diagonal1") {
+                } else if (direction === "diagonal1") {
                     xPos = 50 + distance * sineValue;
                     yPos = 50 - distance * sineValue;
-                } else if (oscillationDirection === "diagonal2") {
+                } else if (direction === "diagonal2") {
                     xPos = 50 + distance * sineValue;
                     yPos = 50 + distance * sineValue;
                 }
                 
-                dot.style.left = xPos + '%';
-                dot.style.top = yPos + '%';
+                dot.style.left = xPos + "%";
+                dot.style.top = yPos + "%";
             }
             
             // Continue animation
-            requestId = requestAnimationFrame(animate);
+            animationID = requestAnimationFrame(animate);
         }
         
-        // Event listeners
+        // Event Listeners
         frequencySlider.addEventListener('input', function() {
             frequency = parseFloat(this.value);
-            frequencyValue.textContent = frequency.toFixed(1) + ' Hz';
+            frequencyValue.textContent = frequency.toFixed(1) + " Hz";
             saveSettings();
         });
         
         distanceSlider.addEventListener('input', function() {
             distance = parseInt(this.value);
-            distanceValue.textContent = distance + '%';
+            distanceValue.textContent = distance + "%";
             saveSettings();
         });
         
-        dotSizeSlider.addEventListener('input', function() {
+        sizeSlider.addEventListener('input', function() {
             dotSize = parseInt(this.value);
-            dotSizeValue.textContent = dotSize + '%';
+            sizeValue.textContent = dotSize + "%";
             updateDotSize();
             saveSettings();
         });
         
-        playPauseButton.addEventListener('click', togglePlayPause);
-        
-        // Color selection event listeners
-        colorRadios.forEach(radio => {
+        // Color radio buttons
+        document.querySelectorAll('input[name="dotColor"]').forEach(radio => {
             radio.addEventListener('change', function() {
                 dotColor = this.value;
                 updateDotColor();
@@ -629,48 +687,50 @@
             });
         });
         
-        // Colorblind mode toggle
-        colorblindToggle.addEventListener('change', function() {
-            colorblindMode = this.checked;
-            updateDotColor();
-            
-            // Update color swatches in the UI
-            const colorSet = colorblindMode ? colorMappings.colorblind : colorMappings.regular;
-            document.querySelectorAll('.color-swatch').forEach(swatch => {
-                const colorClass = Array.from(swatch.classList).find(cls => colorMappings.regular.hasOwnProperty(cls));
-                if (colorClass) {
-                    swatch.style.backgroundColor = colorSet[colorClass];
-                }
-            });
-            
-            console.log("Saving colorblind mode:", colorblindMode);
-            saveSettings();
-        });
-        
-        // Direction selection event listeners
-        directionRadios.forEach(radio => {
+        // Direction radio buttons
+        document.querySelectorAll('input[name="direction"]').forEach(radio => {
             radio.addEventListener('change', function() {
-                oscillationDirection = this.value;
+                direction = this.value;
                 saveSettings();
             });
         });
         
-        // Initialize color swatches
-        function initializeColorSwatches() {
-            const colorSet = colorblindMode ? colorMappings.colorblind : colorMappings.regular;
-            document.querySelectorAll('.color-swatch').forEach(swatch => {
-                const colorClass = Array.from(swatch.classList).find(cls => colorMappings.regular.hasOwnProperty(cls));
-                if (colorClass) {
-                    swatch.style.backgroundColor = colorSet[colorClass];
-                }
+        // Shape radio buttons
+        document.querySelectorAll('input[name="shape"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                shape = this.value;
+                updateDotShape();
+                saveSettings();
             });
-        }
+        });
         
-        // Load settings and start animation
+        // Colorblind toggle
+        colorblindToggle.addEventListener('change', function() {
+            colorblindMode = this.checked;
+            updateColorSwatches();
+            updateDotColor();
+            saveSettings();
+        });
+        
+        // Play/Pause button
+        playPauseButton.addEventListener('click', togglePlayPause);
+        
+        // Spacebar control
+        document.addEventListener('keydown', function(event) {
+            if (event.key === ' ' || event.code === 'Space') {
+                event.preventDefault(); // Prevent page scroll
+                togglePlayPause();
+            }
+        });
+        
+        // Initialize app
         loadSettings();
         updateDotSize();
-        initializeColorSwatches();
-        requestId = requestAnimationFrame(animate);
+        updateDotShape();
+        updateColorSwatches();
+        
+        // Start animation
+        animationID = requestAnimationFrame(animate);
     </script>
 </body>
 </html>
