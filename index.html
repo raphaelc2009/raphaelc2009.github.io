@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EMDR Red Dot</title>
+    <title>EMDR Oscillator</title>
     <style>
         /* Basic styles */
         body {
@@ -105,6 +105,26 @@
         
         .button.play:hover {
             background-color: #0b7dda;
+        }
+        
+        .button.fullscreen {
+            background-color: #9C27B0;
+        }
+        
+        .button.fullscreen:hover {
+            background-color: #7B1FA2;
+        }
+        
+        .button.exit-fullscreen {
+            background-color: #FF5722;
+        }
+        
+        /* Buttons spacing */
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
         }
         
         /* Color options */
@@ -253,7 +273,7 @@
     </style>
 </head>
 <body>
-    <h1>EMDR Red Dot</h1>
+    <h1>EMDR Oscillator</h1>
     
     <div class="container">
         <div id="dot" class="dot"></div>
@@ -362,9 +382,10 @@
             <span>Colorblind Mode</span>
         </div>
         
-        <!-- Play/Pause button -->
-        <div class="control-group">
+        <!-- Play/Pause and Fullscreen buttons -->
+        <div class="control-group button-group">
             <button id="playPause" class="button">Pause</button>
+            <button id="fullscreenBtn" class="button fullscreen">Full Screen</button>
         </div>
     </div>
 
@@ -379,6 +400,7 @@
         const sizeValue = document.getElementById('dotSize-value');
         const colorblindToggle = document.getElementById('colorblind');
         const playPauseButton = document.getElementById('playPause');
+        const fullscreenButton = document.getElementById('fullscreenBtn');
         
         // State variables
         let frequency = parseFloat(frequencySlider.value);
@@ -714,6 +736,75 @@
         
         // Play/Pause button
         playPauseButton.addEventListener('click', togglePlayPause);
+        
+        // Fullscreen toggle
+        fullscreenButton.addEventListener('click', toggleFullscreen);
+        
+        // Function to toggle fullscreen
+        function toggleFullscreen() {
+            if (!document.fullscreenElement &&    // Standard property
+                !document.mozFullScreenElement && // Firefox
+                !document.webkitFullscreenElement && // Chrome, Safari and Opera
+                !document.msFullscreenElement) {  // IE/Edge
+                
+                // Enter fullscreen
+                const container = document.querySelector('.container');
+                
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                } else if (container.mozRequestFullScreen) {
+                    container.mozRequestFullScreen();
+                } else if (container.webkitRequestFullscreen) {
+                    container.webkitRequestFullscreen();
+                } else if (container.msRequestFullscreen) {
+                    container.msRequestFullscreen();
+                }
+                
+                fullscreenButton.textContent = "Exit Full Screen";
+                fullscreenButton.classList.remove("fullscreen");
+                fullscreenButton.classList.add("exit-fullscreen");
+                
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                
+                fullscreenButton.textContent = "Full Screen";
+                fullscreenButton.classList.remove("exit-fullscreen");
+                fullscreenButton.classList.add("fullscreen");
+            }
+        }
+        
+        // Listen for fullscreen change events to update button state
+        document.addEventListener('fullscreenchange', updateFullscreenButtonState);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenButtonState);
+        document.addEventListener('mozfullscreenchange', updateFullscreenButtonState);
+        document.addEventListener('MSFullscreenChange', updateFullscreenButtonState);
+        
+        // Update fullscreen button state based on current fullscreen status
+        function updateFullscreenButtonState() {
+            if (document.fullscreenElement || 
+                document.webkitFullscreenElement || 
+                document.mozFullScreenElement ||
+                document.msFullscreenElement) {
+                // Currently in fullscreen mode
+                fullscreenButton.textContent = "Exit Full Screen";
+                fullscreenButton.classList.remove("fullscreen");
+                fullscreenButton.classList.add("exit-fullscreen");
+            } else {
+                // Not in fullscreen mode
+                fullscreenButton.textContent = "Full Screen";
+                fullscreenButton.classList.remove("exit-fullscreen");
+                fullscreenButton.classList.add("fullscreen");
+            }
+        }
         
         // Spacebar control
         document.addEventListener('keydown', function(event) {
